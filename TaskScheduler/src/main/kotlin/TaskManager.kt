@@ -18,7 +18,6 @@ class TaskManager {
     fun addTask(task: Task) {
         // Don't allow duplicate task titles
         if (task.title in tasks.map { it.title }) {
-            println("Task with title '${task.title}' already exists")
             throw IllegalArgumentException("A task with the title '${task.title}' already exists.")
         }
         checkCircularDependency(task)
@@ -40,10 +39,14 @@ class TaskManager {
         // TODO: Before adding a task, check if it creates a circular dependency
     }
 
-    fun recommendNextTask() {
-        // TODO: Based on priorities
-        // 1. Return the task with the highest priority if possible
-        // 2. If not possible, either task with second highest priority or the one with the earliest deadline
+    fun recommendNextTask(): Task? {
+        if (tasks.isEmpty()) {
+            println("No tasks in list, cannot recommend anything")
+        }
+        return tasks
+            .filter { it.status == Status.NOT_STARTED && it.dependencies.all { dep -> dep.status == Status.COMPLETED } }
+            .sortedWith(compareBy( { it.priority }, { it.estimatedDuration }))
+            .firstOrNull()
     }
 
     fun canDoAllTasks(): Boolean {

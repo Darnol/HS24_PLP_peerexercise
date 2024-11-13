@@ -26,22 +26,20 @@ fun main() {
         estimatedDuration = 1,
         status = Status.NOT_STARTED
     )
-
-//    println(taskGroceries)
-//    println(taskCook)
-//    println(taskClean)
-
     val taskManager = TaskManager()
     taskManager.addTask(taskGroceries)
     taskManager.addTask(taskCook)
     taskManager.addTask(taskClean)
 
-    taskManager.printTasks()
+    var recommendedTask: Task? = taskManager.recommendNextTask()
+    recommendedTask?.let {
+        println("Recommended task: ${it.title}. Setting it complete")
+        taskManager.updateTaskStatus(it, Status.COMPLETED)
+    }
 
-    taskManager.updateTaskStatus(taskGroceries, Status.IN_PROGRESS)
-
-    taskManager.printTasks()
-
-
+    recommendedTask = taskManager.recommendNextTask()
+    recommendedTask?.let {
+        println("Recommended task: ${it.title}. Setting it complete")
+    }
 
 }
