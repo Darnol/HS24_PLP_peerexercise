@@ -3,11 +3,22 @@ package taskScheduler
 import java.time.LocalDateTime
 
 fun main() {
+
+    val taskWork: Task = Task(
+        title = "Work",
+        priority = Priority.HIGH,
+        deadline = LocalDateTime.now().plusHours(4),
+        estimatedDuration = 3,
+        dependencies = mutableListOf(taskCook),
+        status = Status.NOT_STARTED
+    )
+
     val taskGroceries: Task = Task(
         title = "Groceries",
         priority = Priority.HIGH,
         deadline = LocalDateTime.now().plusHours(3),
         estimatedDuration = 2,
+        dependencies = mutableListOf(taskWork),
         status = Status.NOT_STARTED
     )
 
@@ -26,17 +37,20 @@ fun main() {
         estimatedDuration = 1,
         status = Status.NOT_STARTED
     )
+
+//    taskWork.dependencies.add(taskCook)
+
     val taskManager = TaskManager()
     taskManager.addTask(taskGroceries)
     taskManager.addTask(taskCook)
     taskManager.addTask(taskClean)
-
+//
     var recommendedTask: Task? = taskManager.recommendNextTask()
     recommendedTask?.let {
         println("Recommended task: ${it.title}. Setting it complete")
         taskManager.updateTaskStatus(it, Status.COMPLETED)
     }
-
+//
     recommendedTask = taskManager.recommendNextTask()
     recommendedTask?.let {
         println("Recommended task: ${it.title}. Setting it complete")

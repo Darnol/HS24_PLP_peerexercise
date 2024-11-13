@@ -15,17 +15,22 @@ class TaskManager {
         return tasks.size
     }
 
+
     fun addTask(task: Task) {
         // Don't allow duplicate task titles
         if (task.title in tasks.map { it.title }) {
             throw IllegalArgumentException("A task with the title '${task.title}' already exists.")
         }
-        checkCircularDependency(task)
+//        checkCircularDependency(task)
         tasks.add(task)
         println("Added task: ${task.title}")
     }
 
     fun removeTask(task: Task) {
+        // Remove it as dependency
+        tasks.forEach { it.dependencies.remove(task) }
+
+        // Remove the task itself
         tasks.remove(task)
         println("Removed task: ${task.title}")
     }
@@ -35,9 +40,33 @@ class TaskManager {
         println("Updated status of task '${task.title}' to $newStatus")
     }
 
-    private fun checkCircularDependency(taskToAdd: Task) {
-        // TODO: Before adding a task, check if it creates a circular dependency
-    }
+//    private fun checkCircularDependency(taskToAdd: Task) {
+//        // Start a DFS from the task to be added, passing an empty set as the initial visited set
+//        if (hasCircularDependency(taskToAdd, mutableSetOf())) {
+//            throw IllegalArgumentException("Adding '${taskToAdd.title}' would create a circular dependency.")
+//        }
+//    }
+//
+//    private fun hasCircularDependency(task: Task, visited: MutableSet<Task>): Boolean {
+//        // If the task is already in the visited set, we have a circular dependency
+//        if (task in visited) {
+//            return true
+//        }
+//
+//        // Add the task to the visited set
+//        visited.add(task)
+//
+//        // Recursively check each dependency of the task
+//        for (dependency in task.dependencies) {
+//            if (hasCircularDependency(dependency, visited)) {
+//                return true
+//            }
+//        }
+//
+//        // Remove the task from the visited set after processing
+//        visited.remove(task)
+//        return false
+//    }
 
     fun recommendNextTask(): Task? {
         if (tasks.isEmpty()) {

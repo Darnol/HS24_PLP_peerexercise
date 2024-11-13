@@ -70,6 +70,14 @@ class TaskManagerTest {
     }
 
     @Test
+    fun removeTaskDependency() {
+        taskManager.addTask(tasks[0])
+        taskManager.addTask(tasks[1])
+        taskManager.removeTask(tasks[0])
+        assertEquals(tasks[1].dependencies.size, 0)
+    }
+
+    @Test
     fun updateTaskStatus() {
         val nameTaskToUpdate: String = tasks[0].title
         taskManager.addTask(tasks[0])
