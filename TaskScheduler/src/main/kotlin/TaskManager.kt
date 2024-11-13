@@ -3,11 +3,24 @@ package taskScheduler
 class TaskManager {
     private val tasks = mutableListOf<Task>()
 
+    fun getTasks(): MutableList<Task> {
+        return tasks
+    }
+
     fun printTasks() {
         tasks.forEach { println(it) }
     }
 
+    fun countTasks(): Int {
+        return tasks.size
+    }
+
     fun addTask(task: Task) {
+        // Don't allow duplicate task titles
+        if (task.title in tasks.map { it.title }) {
+            println("Task with title '${task.title}' already exists")
+            throw IllegalArgumentException("A task with the title '${task.title}' already exists.")
+        }
         checkCircularDependency(task)
         tasks.add(task)
         println("Added task: ${task.title}")
