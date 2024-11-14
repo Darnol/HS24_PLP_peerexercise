@@ -9,7 +9,6 @@ fun main() {
         priority = Priority.HIGH,
         deadline = LocalDateTime.now().plusHours(4),
         estimatedDuration = 3,
-        dependencies = mutableListOf(taskCook),
         status = Status.NOT_STARTED
     )
 
@@ -38,19 +37,20 @@ fun main() {
         status = Status.NOT_STARTED
     )
 
+    // Artificially create a circular dependency
 //    taskWork.dependencies.add(taskCook)
 
     val taskManager = TaskManager()
     taskManager.addTask(taskGroceries)
     taskManager.addTask(taskCook)
     taskManager.addTask(taskClean)
-//
+
     var recommendedTask: Task? = taskManager.recommendNextTask()
     recommendedTask?.let {
         println("Recommended task: ${it.title}. Setting it complete")
         taskManager.updateTaskStatus(it, Status.COMPLETED)
     }
-//
+
     recommendedTask = taskManager.recommendNextTask()
     recommendedTask?.let {
         println("Recommended task: ${it.title}. Setting it complete")
