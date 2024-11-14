@@ -37,7 +37,6 @@ class TaskManager {
         }
 
         checkCircularDependency(task)
-
         tasks.add(task)
         println("Added task: ${task.title}")
     }
@@ -85,10 +84,14 @@ class TaskManager {
         if (tasks.isEmpty()) {
             println("No tasks in list, cannot recommend anything")
         }
-        return tasks
+        val foundTask = tasks
             .filter { it.status == Status.NOT_STARTED && it.dependencies.all { dep -> dep.status == Status.COMPLETED } }
             .sortedWith(compareBy( { it.priority }, { it.estimatedDuration }))
             .firstOrNull()
+        if (foundTask == null) {
+            println("No tasks available to recommend")
+        }
+        return foundTask
     }
 
     fun canDoAllTasks(): Boolean {

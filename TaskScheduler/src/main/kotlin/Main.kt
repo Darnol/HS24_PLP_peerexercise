@@ -41,6 +41,7 @@ fun main() {
         title = "InThePast",
         priority = Priority.LOW,
         deadline = LocalDateTime.now().minusHours(1),
+//        deadline = LocalDateTime.now().plusHours(1),
         estimatedDuration = 1,
         status = Status.NOT_STARTED
     )
@@ -57,15 +58,12 @@ fun main() {
     taskManager.addTask(taskCook)
     taskManager.addTask(taskClean)
 
-//    var recommendedTask: Task? = taskManager.recommendNextTask()
-//    recommendedTask?.let {
-//        println("Recommended task: ${it.title}. Setting it complete")
-//        taskManager.updateTaskStatus(it, Status.COMPLETED)
-//    }
-//
-//    recommendedTask = taskManager.recommendNextTask()
-//    recommendedTask?.let {
-//        println("Recommended task: ${it.title}. Setting it complete")
-//    }
-
+    var recommendedTask: Task?
+    while (true) {
+        recommendedTask = taskManager.recommendNextTask()
+        recommendedTask?.let {
+            println("Recommended task: ${it.title}")
+            taskManager.updateTaskStatus(it, Status.COMPLETED)
+        } ?: break
+    }
 }
