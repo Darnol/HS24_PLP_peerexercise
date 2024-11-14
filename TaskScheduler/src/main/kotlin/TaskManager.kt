@@ -103,7 +103,6 @@ class TaskManager {
 
         val remainingHoursNew = remainingHours - task.estimatedDuration
         tasksAlreadyAllocated.add(task)
-        task.status = Status.COMPLETED
         println("Add task ${task.title} with duration ${task.estimatedDuration} to schedule")
         return remainingHoursNew
     }
@@ -126,11 +125,10 @@ class TaskManager {
 
         println("Checking if we can do all due tasks between $startOfNextDay and $endOfNextDay")
         println("Available hours: 8")
-
-        val tasksCopy = tasks.map { it.copy() }
+        
         var tasksAlreadyCounted: MutableSet<Task> = mutableSetOf<Task>()
         var remainingHours = 8
-        for (task in tasksCopy) {
+        for (task in tasks) {
 
             println("Checking task: ${task.title}")
 
