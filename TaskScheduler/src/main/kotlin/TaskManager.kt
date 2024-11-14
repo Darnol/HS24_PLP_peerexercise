@@ -1,5 +1,6 @@
 package taskScheduler
 
+import java.time.LocalTime
 import java.time.LocalDateTime
 
 class TaskManager {
@@ -95,7 +96,53 @@ class TaskManager {
     }
 
     fun canDoAllTasks(): Boolean {
-        // TODO: Given an 8h workday, can we do them all?
-        return false
+        /*
+        There are many different things we have to check
+        - Do not consider tasks that have the deadline further than next day + 8 hours away
+        - Do not consider tasks that have dependencies that are not COMPLETED
+         */
+
+        // Get the timeframe we have to consider. Next day 08:00 till 16:00
+        // Start time: next day at 08:00
+        val startOfNextDay = LocalDateTime.now()
+            .plusDays(1)
+            .with(LocalTime.of(8, 0)) // Set to 08:00
+
+        // End time: same next day at 16:00
+        val endOfNextDay = startOfNextDay.with(LocalTime.of(16, 0)) // Set to 16:00
+
+        println("Checking if we can do all due tasks between $startOfNextDay and $endOfNextDay")
+
+        var remainingHours = 8
+        for (task in tasks) {
+            // If already completed skip
+            task.takeIf { it.status != Status.COMPLETED } ?: continue
+
+            // If deadline is not set skip
+            task.deadline ?: continue
+
+            // If deadline is further than next day 16:00 skip
+            task.takeIf { it.deadline!! <= endOfNextDay } ?: continue
+
+            // If task has no dependencies, subtract duration from remaining hours and go on
+            if (task.dependencies.isEmpty()) {
+                remainingHours -= task.estimatedDuration
+                if (remainingHours < 0) {
+                    return false
+                }
+                continue
+            }
+
+            // If task has dependencies, check if all are COMPLETED. If all completed, subtract duration from remaining hours
+            if (task.dependencies.all { it.status == Status.COMPLETED }) {
+                remainingHours -= task.estimatedDuration
+                if (remainingHours < 0) {
+                    return false
+                }
+            }
+
+            // If task has dependencies that are not COMPLETED
+        }
+        return true
     }
 }

@@ -58,12 +58,17 @@ fun main() {
     taskManager.addTask(taskCook)
     taskManager.addTask(taskClean)
 
-    var recommendedTask: Task?
-    while (true) {
-        recommendedTask = taskManager.recommendNextTask()
-        recommendedTask?.let {
-            println("Recommended task: ${it.title}")
-            taskManager.updateTaskStatus(it, Status.COMPLETED)
-        } ?: break
-    }
+    println("Checking if we can do all due tasks tomorrow:")
+    println(taskManager.canDoAllTasks())
+
+//    var recommendedTask: Task?
+//    while (true) {
+//        recommendedTask = taskManager.recommendNextTask()
+//        recommendedTask?.let {
+//            println("Recommended task: ${it.title}")
+//            taskManager.updateTaskStatus(it, Status.COMPLETED)
+//        } ?: break
+//    }
+
+
 }
