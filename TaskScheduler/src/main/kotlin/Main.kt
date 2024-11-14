@@ -1,21 +1,26 @@
 package taskScheduler
 
 import java.time.LocalDateTime
+import java.time.LocalTime
 
 fun main() {
+
+    val startTomorrow = LocalDateTime.now()
+        .plusDays(1)
+        .with(LocalTime.of(8, 0)) // Set to 08:00
 
     val taskWork: Task = Task(
         title = "Work",
         priority = Priority.HIGH,
-        deadline = LocalDateTime.now().plusHours(4),
-        estimatedDuration = 3,
+        deadline = startTomorrow.plusHours(1),
+        estimatedDuration = 5,
         status = Status.NOT_STARTED
     )
 
     val taskGroceries: Task = Task(
         title = "Groceries",
         priority = Priority.HIGH,
-        deadline = LocalDateTime.now().plusHours(3),
+        deadline = startTomorrow.plusHours(4),
         estimatedDuration = 2,
         dependencies = mutableListOf(taskWork),
         status = Status.NOT_STARTED
@@ -24,7 +29,7 @@ fun main() {
     val taskCook: Task = Task(
         title = "Cook",
         priority = Priority.MEDIUM,
-        deadline = LocalDateTime.now().plusHours(5),
+        deadline = startTomorrow.plusHours(6),
         estimatedDuration = 2,
         dependencies = mutableListOf(taskGroceries),
         status = Status.NOT_STARTED
@@ -33,7 +38,7 @@ fun main() {
     val taskClean: Task = Task(
         title = "Clean",
         priority = Priority.LOW,
-        estimatedDuration = 1,
+        estimatedDuration = 10,
         status = Status.NOT_STARTED
     )
 

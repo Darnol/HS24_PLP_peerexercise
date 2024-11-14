@@ -95,6 +95,19 @@ class TaskManager {
         return foundTask
     }
 
+    private fun allocateTime(task: Task, tasksAlreadyAllocated: MutableSet<Task>,  remainingHours: Int): Int {
+        // If that task has already been allocated, skip
+        if (tasksAlreadyAllocated.contains(task)) {
+            return remainingHours
+        }
+
+        val remainingHoursNew = remainingHours - task.estimatedDuration
+        tasksAlreadyAllocated.add(task)
+        task.status = Status.COMPLETED
+        println("Add task ${task.title} with duration ${task.estimatedDuration} to schedule")
+        return remainingHoursNew
+    }
+
     fun canDoAllTasks(): Boolean {
         /*
         There are many different things we have to check
@@ -112,22 +125,39 @@ class TaskManager {
         val endOfNextDay = startOfNextDay.with(LocalTime.of(16, 0)) // Set to 16:00
 
         println("Checking if we can do all due tasks between $startOfNextDay and $endOfNextDay")
+        println("Available hours: 8")
 
+        val tasksCopy = tasks.map { it.copy() }
+        var tasksAlreadyCounted: MutableSet<Task> = mutableSetOf<Task>()
         var remainingHours = 8
-        for (task in tasks) {
+        for (task in tasksCopy) {
+
+            println("Checking task: ${task.title}")
+
             // If already completed skip
-            task.takeIf { it.status != Status.COMPLETED } ?: continue
+            if (task.status == Status.COMPLETED) {
+                println("Task ${task.title} is already done, we dont care")
+                continue
+            }
 
             // If deadline is not set skip
-            task.deadline ?: continue
+            if (task.deadline == null) {
+                println("Task ${task.title} has no deadline, we dont care")
+                continue
+            }
 
             // If deadline is further than next day 16:00 skip
-            task.takeIf { it.deadline!! <= endOfNextDay } ?: continue
+            if (task.deadline!! > endOfNextDay) {
+                println("Task ${task.title} has a deadline further than tomorrow 16:00, we dont care")
+                continue
+            }
 
             // If task has no dependencies, subtract duration from remaining hours and go on
             if (task.dependencies.isEmpty()) {
-                remainingHours -= task.estimatedDuration
+                println("Task ${task.title} has no dependencies, we consider it")
+                remainingHours = allocateTime(task, tasksAlreadyCounted, remainingHours)
                 if (remainingHours < 0) {
+                    println("Task ${task.title} pushes us over the limit, we cant do all tasks in time")
                     return false
                 }
                 continue
@@ -135,14 +165,44 @@ class TaskManager {
 
             // If task has dependencies, check if all are COMPLETED. If all completed, subtract duration from remaining hours
             if (task.dependencies.all { it.status == Status.COMPLETED }) {
-                remainingHours -= task.estimatedDuration
+                println("Task ${task.title} has dependencies, all are COMPLETED, we consider it")
+                remainingHours = allocateTime(task, tasksAlreadyCounted, remainingHours)
                 if (remainingHours < 0) {
+                    println("Task ${task.title} pushes us over the limit, we cant do all tasks in time")
+                    return false
+                }
+                continue
+            }
+
+            // If task has dependencies that are not COMPLETED and the deadline is already over, return false, cant solve
+            for (dep in task.dependencies) {
+                if (dep.status != Status.COMPLETED && dep.deadline!! <= startOfNextDay) {
+                    println("Task '${task.title}' has a dependency '${dep.title}' that is not COMPLETED and has a deadline before tomorrow morning, cant complete all tasks!")
                     return false
                 }
             }
 
-            // If task has dependencies that are not COMPLETED
+            // If task has dependencies that are not COMPLETED and the deadline is not over yet, allocate them as well
+            for (dep in task.dependencies) {
+                if (dep.status != Status.COMPLETED) {
+                    println("Task ${task.title} has dependency ${dep.title} that is not COMPLETED, we consider it")
+                    remainingHours = allocateTime(dep, tasksAlreadyCounted, remainingHours)
+                    if (remainingHours < 0) {
+                        println("Task ${dep.title} pushes us over the limit, we cant do all tasks in time")
+                        return false
+                    }
+                    continue
+                }
+            }
+
+            // Finally allocate the task itself
+            remainingHours = allocateTime(task, tasksAlreadyCounted, remainingHours)
+            if (remainingHours < 0) {
+                println("Task ${task.title} pushes us over the limit, we cant do all tasks in time")
+                return false
+            }
         }
+        println("All tasks can be done in time! With $remainingHours hours left")
         return true
     }
 }
