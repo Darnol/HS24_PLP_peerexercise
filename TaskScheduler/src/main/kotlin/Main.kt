@@ -37,23 +37,35 @@ fun main() {
         status = Status.NOT_STARTED
     )
 
+    val taskInThePast: Task = Task(
+        title = "InThePast",
+        priority = Priority.LOW,
+        deadline = LocalDateTime.now().minusHours(1),
+        estimatedDuration = 1,
+        status = Status.NOT_STARTED
+    )
+
     // Artificially create a circular dependency
 //    taskWork.dependencies.add(taskCook)
 
+    // Add a dependency in the past
+//    taskWork.dependencies.add(taskInThePast)
+
     val taskManager = TaskManager()
+    taskManager.addTask(taskWork)
     taskManager.addTask(taskGroceries)
     taskManager.addTask(taskCook)
     taskManager.addTask(taskClean)
 
-    var recommendedTask: Task? = taskManager.recommendNextTask()
-    recommendedTask?.let {
-        println("Recommended task: ${it.title}. Setting it complete")
-        taskManager.updateTaskStatus(it, Status.COMPLETED)
-    }
-
-    recommendedTask = taskManager.recommendNextTask()
-    recommendedTask?.let {
-        println("Recommended task: ${it.title}. Setting it complete")
-    }
+//    var recommendedTask: Task? = taskManager.recommendNextTask()
+//    recommendedTask?.let {
+//        println("Recommended task: ${it.title}. Setting it complete")
+//        taskManager.updateTaskStatus(it, Status.COMPLETED)
+//    }
+//
+//    recommendedTask = taskManager.recommendNextTask()
+//    recommendedTask?.let {
+//        println("Recommended task: ${it.title}. Setting it complete")
+//    }
 
 }

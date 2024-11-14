@@ -1,5 +1,7 @@
 package taskScheduler
 
+import java.time.LocalDateTime
+
 class TaskManager {
     private val tasks = mutableListOf<Task>()
 
@@ -21,7 +23,21 @@ class TaskManager {
         if (task.title in tasks.map { it.title }) {
             throw IllegalArgumentException("A task with the title '${task.title}' already exists.")
         }
+        // Don't allow tasks with deadlines in the past
+        task.deadline?.let {
+            if (task.deadline <= LocalDateTime.now()) {
+                throw IllegalArgumentException("A task cannot have a deadline in the past")
+            }
+        }
+        // Don't allow dependencies which are not COMPLETED to have a deadline in the past
+        for (dep in task.dependencies) {
+            if (dep.status != Status.COMPLETED && dep.deadline != null && dep.deadline <= LocalDateTime.now()) {
+                throw IllegalArgumentException("A task cannot have dependencies which are not COMPLETED and that have a deadline in the past")
+            }
+        }
+
         checkCircularDependency(task)
+
         tasks.add(task)
         println("Added task: ${task.title}")
     }
