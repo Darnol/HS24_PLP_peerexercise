@@ -13,7 +13,7 @@ fun main() {
         title = "Work",
         priority = Priority.HIGH,
         deadline = startTomorrow.plusHours(1),
-        estimatedDuration = 5,
+        estimatedDuration = 3,
         status = Status.NOT_STARTED
     )
 
@@ -38,7 +38,7 @@ fun main() {
     val taskClean: Task = Task(
         title = "Clean",
         priority = Priority.LOW,
-        estimatedDuration = 10,
+        estimatedDuration = 1,
         status = Status.NOT_STARTED
     )
 
@@ -46,34 +46,34 @@ fun main() {
         title = "InThePast",
         priority = Priority.LOW,
         deadline = LocalDateTime.now().minusHours(1),
-//        deadline = LocalDateTime.now().plusHours(1),
         estimatedDuration = 1,
         status = Status.NOT_STARTED
     )
 
-    // Artificially create a circular dependency
-//    taskWork.dependencies.add(taskCook)
-
-    // Add a dependency in the past
+    // This throws an error, cant add tasks with deadlines in the past
 //    taskWork.dependencies.add(taskInThePast)
 
+    // This would create a circular dependency. Cant add that task afterwards
+//    taskWork.dependencies.add(taskCook)
+
+    // Add the tasks to the manager
     val taskManager = TaskManager()
     taskManager.addTask(taskWork)
     taskManager.addTask(taskGroceries)
     taskManager.addTask(taskCook)
     taskManager.addTask(taskClean)
 
-    println("Checking if we can do all due tasks tomorrow:")
-    println(taskManager.canDoAllTasks())
+    println("\n---------------------------------------------------------------------------")
+    taskManager.canDoAllTasks()
 
-//    var recommendedTask: Task?
-//    while (true) {
-//        recommendedTask = taskManager.recommendNextTask()
-//        recommendedTask?.let {
-//            println("Recommended task: ${it.title}")
-//            taskManager.updateTaskStatus(it, Status.COMPLETED)
-//        } ?: break
-//    }
-
-
+    println("\n---------------------------------------------------------------------------")
+    println("Recommending your next tasks:")
+    var recommendedTask: Task?
+    while (true) {
+        recommendedTask = taskManager.recommendNextTask()
+        recommendedTask?.let {
+            println("Recommended task: ${it.title}")
+            taskManager.updateTaskStatus(it, Status.COMPLETED)
+        } ?: break
+    }
 }
