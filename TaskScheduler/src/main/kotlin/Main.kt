@@ -5,10 +5,12 @@ import java.time.LocalTime
 
 fun main() {
 
+    // First get the start of the day tomorrow
     val startTomorrow = LocalDateTime.now()
         .plusDays(1)
         .with(LocalTime.of(8, 0)) // Set to 08:00
 
+    // Create some task, some depend on each other
     val taskWork: Task = Task(
         title = "Work",
         priority = Priority.HIGH,
@@ -50,14 +52,18 @@ fun main() {
         status = Status.NOT_STARTED
     )
 
-    // This throws an error, cant add tasks with deadlines in the past
-//    taskWork.dependencies.add(taskInThePast)
-
-    // This would create a circular dependency. Cant add that task afterwards
-//    taskWork.dependencies.add(taskCook)
-
-    // Add the tasks to the manager
+    // Create a TaskManager instance to manage our tasks
     val taskManager = TaskManager()
+
+    // Before adding our tasks to the manager, go through two scenarios which are prohibited:
+
+    // 1. Add a task with a dependency deadline in the past
+//    taskWork.dependencies.add(taskInThePast) // If uncommented, taskManager.addTask(taskWork) will throw error
+
+    // 2. Add task that creates circular dependency
+//    taskWork.dependencies.add(taskCook) // If uncommented, taskManager.addTask(taskWork) will thorw error
+
+    // Ignoring the error cases, we add our 4 tasks to the manager
     taskManager.addTask(taskWork)
     taskManager.addTask(taskGroceries)
     taskManager.addTask(taskCook)
