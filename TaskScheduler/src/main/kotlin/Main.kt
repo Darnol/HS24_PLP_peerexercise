@@ -61,19 +61,19 @@ fun main() {
 //    taskWork.dependencies.add(taskInThePast) // If uncommented, taskManager.addTask(taskWork) will throw error
 
     // 2. Add task that creates circular dependency
-//    taskWork.dependencies.add(taskCook) // If uncommented, taskManager.addTask(taskWork) will thorw error
+//    taskWork.dependencies.add(taskCook) // If uncommented, taskManager.addTask(taskWork) will throw error
 
     // Ignoring the error cases, we add our 4 tasks to the manager
-    taskManager.addTask(taskWork)
     taskManager.addTask(taskGroceries)
     taskManager.addTask(taskCook)
+    taskManager.addTask(taskWork)
     taskManager.addTask(taskClean)
 
     println("\n---------------------------------------------------------------------------")
     taskManager.canDoAllTasks()
 
     println("\n---------------------------------------------------------------------------")
-    println("Recommending your next tasks:")
+    println("Recommending your next tasks and completing them:")
     var recommendedTask: Task?
     while (true) {
         recommendedTask = taskManager.recommendNextTask()

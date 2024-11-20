@@ -126,7 +126,7 @@ class TaskManager {
         val endOfNextDay = startOfNextDay.plusHours(WORKDAY_HOURS.toLong())
         var remainingHours = WORKDAY_HOURS
 
-        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")
+        val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm")
         val formattedStart = startOfNextDay.format(formatter)
         val formattedEnd = endOfNextDay.format(formatter)
 
@@ -139,6 +139,12 @@ class TaskManager {
         for (task in tasks) {
 
             println("Checking task: ${task.title}")
+
+            // If already time for it allocated skip
+            if (tasksAlreadyCounted.contains(task)) {
+                println(">> Task ${task.title} is already allocated, we can skip it")
+                continue
+            }
 
             // If already completed skip
             if (task.status == Status.COMPLETED) {
@@ -190,8 +196,7 @@ class TaskManager {
 
             // If task has dependencies that are not COMPLETED and the deadline is not over yet, allocate them as well
             for (dep in task.dependencies) {
-                if (dep.status != Status.COMPLETED) {
-                    // TODO: If dep is already accounted for, do not inform but skip it
+                if (dep.status != Status.COMPLETED && !tasksAlreadyCounted.contains(dep)) {
                     println(">> Task ${task.title} has dependency ${dep.title} that is not COMPLETED, we have to allocate time for it first")
                     remainingHours = allocateTime(dep, tasksAlreadyCounted, remainingHours)
                     if (remainingHours < 0) {
