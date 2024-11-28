@@ -7,19 +7,6 @@ import java.time.format.DateTimeFormatter
 class TaskManager {
     private val tasks = mutableListOf<Task>()
 
-    fun getTasks(): MutableList<Task> {
-        return tasks
-    }
-
-    fun printTasks() {
-        tasks.forEach { println(it) }
-    }
-
-    fun countTasks(): Int {
-        return tasks.size
-    }
-
-
     fun addTask(task: Task) {
         // Don't allow duplicate task titles
         if (task.title in tasks.map { it.title }) {
@@ -53,11 +40,13 @@ class TaskManager {
     }
 
     fun updateTaskStatus(task: Task, newStatus: Status) {
+        // Update the Status of a task
         task.status = newStatus
         println("Updated status of task '${task.title}' to $newStatus")
     }
 
     private fun checkCircularDependency(taskToAdd: Task) {
+        // Checking if a task to add will create a circular dependency
         if (hasCircularDependency(taskToAdd, mutableSetOf())) {
             throw IllegalArgumentException("Adding '${taskToAdd.title}' would create a circular dependency.")
         }
@@ -83,6 +72,12 @@ class TaskManager {
     }
 
     fun recommendNextTask(): Task? {
+        /*
+        Recommend the next task based on:
+        - Priority
+        - Estimated Duration
+        If no task are available or all ar COMPLETED, return null
+         */
         if (tasks.isEmpty()) {
             println("No tasks in list, cannot recommend anything")
         }
@@ -97,6 +92,10 @@ class TaskManager {
     }
 
     private fun allocateTime(task: Task, tasksAlreadyAllocated: MutableSet<Task>,  remainingHours: Int): Int {
+        /*
+        Helper to allocate time for a task while checking if we have enough time left
+         */
+
         // If that task has already been allocated, skip
         if (tasksAlreadyAllocated.contains(task)) {
             return remainingHours

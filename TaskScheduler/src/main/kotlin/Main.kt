@@ -11,6 +11,8 @@ fun main() {
         .with(LocalTime.of(8, 0)) // Set to 08:00
 
     // Create some task, some depend on each other
+    // Work -> Groceries -> Cook
+    // Clean is independent
     val taskWork: Task = Task(
         title = "Work",
         priority = Priority.HIGH,
@@ -44,6 +46,15 @@ fun main() {
         status = Status.NOT_STARTED
     )
 
+    // This task will be added and removed to showcase functionality
+    val taskIrrelevant: Task = Task(
+        title = "Irrelevant",
+        priority = Priority.LOW,
+        estimatedDuration = 1,
+        status = Status.NOT_STARTED
+    )
+
+    // Also create a task with a deadline in the past to showcase error handling
     val taskInThePast: Task = Task(
         title = "InThePast",
         priority = Priority.LOW,
@@ -69,12 +80,33 @@ fun main() {
     taskManager.addTask(taskWork)
     taskManager.addTask(taskClean)
 
-    println("\n---------------------------------------------------------------------------")
-    taskManager.canDoAllTasks()
+    // We can also add and remove a task
+    taskManager.addTask(taskIrrelevant)
+    taskManager.removeTask(taskIrrelevant)
 
     println("\n---------------------------------------------------------------------------")
+    /*
+     Addressing the function:
+        "Calculate whether all deadlines can be met given estimated durations and assuming an
+        8h work day, starting work on the next calendar day."
+
+     canDoAllTasks will check if all tasks can be done, i.e. no circular dependencies and no dependencies with deadline in the past
+     It will not change the status of any task
+     */
+    taskManager.canDoAllTasks()
+
+
+    println("\n---------------------------------------------------------------------------")
+    /*
+    Addressing the functions:
+         "Get a next recommended task based on priorities and dependencies"
+         "Calculate an optimal sequence of tasks considering deadlines and dependencies"
+     */
+
+    // recommendNextTask
     println("Recommending your next tasks and completing them:")
     var recommendedTask: Task?
+    // Keep recommending tasks until there are no more tasks to recommend
     while (true) {
         recommendedTask = taskManager.recommendNextTask()
         recommendedTask?.let {
